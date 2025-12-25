@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bookstore-app
+spec:
+  replicas: 1
+  selector:                     # REQUIRED
+    matchLabels:
+      app: bookstore-app        # selector labels
+  template:
+    metadata:
+      labels:
+        app: bookstore-app      # MUST match selector.matchLabels
+    spec:
+      containers:
+      - name: app
+        image: nginx:1.27-alpine  
+        volumeMounts:
+        - mountPath: /app/data
+          name: app-storage
+      volumes:  
+      - name: app-storage
+        persistentVolumeClaim:
+          claimName: bookstore-app-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: bookstore-app-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce          # changed from ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: standard  # or omit to use default
+
+#In the Deployment's pod section, volumes links app-storage to that PVC. This grabs the real disk space and makes it available to the pod, like plugging in an external drive.
+​
+#The nginx container "mounts" this storage at /app/data—think of it as a folder inside the container. 
