@@ -35,3 +35,6 @@ spec:
       storage: 10Gi
   storageClassName: standard  # or omit to use default
 
+#In the Deployment's pod section, volumes links app-storage to that PVC. This grabs the real disk space and makes it available to the pod, like plugging in an external drive.
+​
+#The nginx container "mounts" this storage at /app/data—think of it as a folder inside the container. 
